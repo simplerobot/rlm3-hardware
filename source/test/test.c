@@ -3,21 +3,11 @@
 #include "task.h"
 
 
-static void SendText(const char* text)
-{
-	for (size_t i = 0; text[i] != 0; i++)
-		ITM_SendChar(text[i]);
-}
-
 extern void RLM3_Main()
 {
-	TPI->ACPR = HAL_RCC_GetHCLKFreq() / 1000000 - 1;
-
-	vTaskDelay(1000);
-
-	SendText("Running tests...\n");
-	SendText("Passed!\n");
-	SendText("EOT PASS\n");
+	ITM_SendString("Running tests...\n");
+	ITM_SendString("Passed!\n");
+	ITM_SendString("EOT PASS\n");
 
 	for (;;)
 	{
@@ -26,6 +16,6 @@ extern void RLM3_Main()
 		HAL_GPIO_WritePin(STATUS_LIGHT_GPIO_Port, STATUS_LIGHT_Pin, GPIO_PIN_RESET);
 		vTaskDelay(1000);
 
-		SendText("...\n");
+		ITM_SendString("...\n");
 	}
 }

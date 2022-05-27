@@ -140,7 +140,7 @@ HX = $(TOOLCHAIN_PATH)objcopy -O ihex
 BN = $(TOOLCHAIN_PATH)objcopy -O binary -S
 
 MCU = -mcpu=cortex-m4 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-OPTIONS = -fdata-sections -ffunction-sections -Wall -Werror
+OPTIONS = -fdata-sections -ffunction-sections -Wall -Werror -DUSE_FULL_ASSERT=1
 
 SPACE = $(NOT_DEFINED) $(NOT_DEFINED)
 VPATH = $(subst $(SPACE),:,$(strip $(LIBRARY_DIRS)))
@@ -170,7 +170,7 @@ $(LIBRARY_BUILD_DIR)/Legacy :
 	mkdir -p $@
 
 test : library $(TEST_BUILD_DIR)/test.bin $(TEST_BUILD_DIR)/test.hex
-	$(PKG_HW_TEST_AGENT_DIR)/sr-hw-test-agent --run --test-timeout=15 --system-frequency=180000000 --trace-frequency=1000000 --board RLM36 --file $(TEST_BUILD_DIR)/test.bin	
+	$(PKG_HW_TEST_AGENT_DIR)/sr-hw-test-agent --run --test-timeout=15 --trace-frequency=2000000 --board RLM36 --file $(TEST_BUILD_DIR)/test.bin	
 	
 $(TEST_BUILD_DIR)/test.bin : $(TEST_BUILD_DIR)/test.elf
 	$(BN) $< $@

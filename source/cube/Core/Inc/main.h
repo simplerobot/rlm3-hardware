@@ -54,6 +54,13 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
+extern void ITM_SendString(const char* str);
+extern void ITM_SendUInt(uint32_t x);
+extern void ITM_SendInt(int32_t x);
+extern void ITM_SendHex(uint32_t x);
+extern void ITM_Format(const char* format, ...);
+
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
