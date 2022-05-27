@@ -124,7 +124,6 @@ LIBRARY_LD_FILES = \
 
 LIBRARY_ALL_FILES = $(LIBRARY_H_FILES) $(LIBRARY_C_FILES) $(LIBRARY_S_FILES) $(LIBRARY_LD_FILES)
 
-
 BUILD_DIR = build
 LIBRARY_BUILD_DIR = $(BUILD_DIR)/library
 TEST_BUILD_DIR = $(BUILD_DIR)/test
@@ -194,7 +193,16 @@ $(TEST_BUILD_DIR)/%.o : $(TEST_SOURCE_DIR)/%.c Makefile | $(TEST_BUILD_DIR)
 $(TEST_BUILD_DIR) :
 	mkdir -p $@
 
-release : test
+release : test $(LIBRARY_ALL_FILES:%=$(RELEASE_BUILD_DIR)/%)
+
+$(RELEASE_BUILD_DIR)/% : $(LIBRARY_BUILD_DIR)/% | $(RELEASE_BUILD_DIR) $(RELEASE_BUILD_DIR)/Legacy
+	cp $< $@
+	
+$(RELEASE_BUILD_DIR) :
+	mkdir -p $@
+
+$(RELEASE_BUILD_DIR)/Legacy :
+	mkdir -p $@
 
 #
 #
