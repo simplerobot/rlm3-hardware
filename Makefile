@@ -204,40 +204,6 @@ $(RELEASE_BUILD_DIR) :
 $(RELEASE_BUILD_DIR)/Legacy :
 	mkdir -p $@
 
-#
-#
-#
-#main : library $(MAIN_BUILD_DIR)/$(PROJECT_NAME).bin $(MAIN_BUILD_DIR)/$(PROJECT_NAME).hex
-#
-#$(MAIN_BUILD_DIR)/%.o : $(LIBRARY_BUILD_DIR)/%.c Makefile
-#	@ mkdir -p $(dir $@)
-#	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) -MMD -Os $< -o $@
-#
-#$(MAIN_BUILD_DIR)/%.o : $(LIBRARY_BUILD_DIR)/%.s Makefile
-#	@ mkdir -p $(dir $@)
-#	$(AS) -c $(MCU) $(OPTIONS) $(DEFINES) -MMD $< -o $@
-#
-#$(MAIN_BUILD_DIR)/$(PROJECT_NAME).elf : $(LIBRARY_C_FILES:%.c=$(MAIN_BUILD_DIR)/%.o) $(LIBRARY_S_FILES:%.S=$(MAIN_BUILD_DIR)/%.o)
-#	$(CC) $(MCU) -specs=nano.specs -T$(LIBRARY_BUILD_DIR)/$(LIBRARY_LD_FILES) $(LIBRARIES) -Wl,--gc-sections $^ -o $@ -Wl,-Map=$@.map,--cref
-#	$(SZ) $@
-#
-#$(MAIN_BUILD_DIR)/$(PROJECT_NAME).bin : $(MAIN_BUILD_DIR)/$(PROJECT_NAME).elf
-#	$(BN) $< $@
-#
-#$(MAIN_BUILD_DIR)/$(PROJECT_NAME).hex : $(MAIN_BUILD_DIR)/$(PROJECT_NAME).elf
-#	$(HX) $< $@
-#
-#
-#release: $(RELEASE_TGZ)
-#
-#$(RELEASE_TGZ) : $(LIBRARY_ALL_FILES:%=$(RELEASE_DIR)/library/%)
-#	tar -C $(RELEASE_DIR) -cf $@ $(LIBRARY_ALL_FILES:%=library/%)
-#
-#$(RELEASE_DIR)/library/% : $(LIBRARY_BUILD_DIR)/% Makefile
-#	@ mkdir -p $(dir $@)
-#	cp $< $@
-
-
 %.h : ;
 %.hpp : ;
 

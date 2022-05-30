@@ -84,6 +84,8 @@ void StartDefaultTask(void *argument);
 
 extern void ITM_SendString(const char* str)
 {
+  if (str == NULL)
+	  str = "(null)";
   while (*str != 0)
     ITM_SendChar(*(str++));
 }
