@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdarg.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -123,11 +123,8 @@ extern void ITM_SendHex(uint32_t x)
     ITM_SendChar(HEX_DIGITS[(x >> (32 - 4 * i)) & 0x0F]);
 }
 
-extern void ITM_Format(const char* format, ...)
+extern void ITM_VFormat(const char * format, va_list args)
 {
-  va_list args;
-  va_start(args, format);
-
   while (*format != 0)
   {
     char c = *(format++);
@@ -153,6 +150,14 @@ extern void ITM_Format(const char* format, ...)
     else
       ITM_SendChar(c);
   }
+}
+
+extern void ITM_Format(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  ITM_VFormat(format, args);
+
   va_end(args);
 }
 

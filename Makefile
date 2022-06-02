@@ -177,7 +177,7 @@ $(TEST_BUILD_DIR)/test.bin : $(TEST_BUILD_DIR)/test.elf
 $(TEST_BUILD_DIR)/test.hex : $(TEST_BUILD_DIR)/test.elf
 	$(HX) $< $@
 
-$(TEST_BUILD_DIR)/test.elf : $(LIBRARY_C_FILES:%.c=$(TEST_BUILD_DIR)/%.o) $(LIBRARY_S_FILES:%.S=$(TEST_BUILD_DIR)/%.o) $(TEST_SOURCE_CPP_FILES:%.c=$(TEST_BUILD_DIR)/%.o)
+$(TEST_BUILD_DIR)/test.elf : $(LIBRARY_C_FILES:%.c=$(TEST_BUILD_DIR)/%.o) $(LIBRARY_S_FILES:%.s=$(TEST_BUILD_DIR)/%.o) $(TEST_SOURCE_CPP_FILES:%.c=$(TEST_BUILD_DIR)/%.o)
 	$(CC) $(MCU) -specs=nano.specs -T$(LIBRARY_BUILD_DIR)/$(LIBRARY_LD_FILES) $(LIBRARIES) -Wl,--gc-sections $^ -o $@ -Wl,-Map=$@.map,--cref
 	$(SZ) $@
 

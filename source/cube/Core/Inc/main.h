@@ -32,6 +32,8 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <stdarg.h>
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -58,6 +60,7 @@ extern void ITM_SendString(const char* str);
 extern void ITM_SendUInt(uint32_t x);
 extern void ITM_SendInt(int32_t x);
 extern void ITM_SendHex(uint32_t x);
+extern void ITM_VFormat(const char * format, va_list args);
 extern void ITM_Format(const char* format, ...);
 
 
