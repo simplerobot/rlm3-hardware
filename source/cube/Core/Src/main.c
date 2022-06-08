@@ -188,7 +188,7 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
-  HAL_Delay(100); // STLINK connect may not halt the mpu immediately after reset.  this small delay prevents many issues.
+  HAL_Delay(100);
   TPI->ACPR = HAL_RCC_GetHCLKFreq() / 2000000 - 1;
 
   /* USER CODE END SysInit */
@@ -304,10 +304,6 @@ void SystemClock_Config(void)
     Error_Handler();
   }
   HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSI, RCC_MCODIV_1);
-
-  /** Enables the Clock Security System
-  */
-  HAL_RCC_EnableCSS();
 }
 
 /**
