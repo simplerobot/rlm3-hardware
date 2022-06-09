@@ -189,7 +189,6 @@ int main(void)
   /* USER CODE BEGIN SysInit */
 
   HAL_Delay(100);
-  TPI->ACPR = HAL_RCC_GetHCLKFreq() / 2000000 - 1;
 
   /* USER CODE END SysInit */
 
