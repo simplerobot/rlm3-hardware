@@ -1,5 +1,6 @@
 GITHUB_DEPS += simplerobot/build-scripts
 GITHUB_DEPS += simplerobot/hw-test-agent
+GITHUB_DEPS += simplerobot/logger
 include ../build-scripts/build/release/include.make
 
 TOOLCHAIN_PATH = /opt/gcc-arm-none-eabi-7-2018-q2-update/bin/arm-none-eabi-
@@ -122,7 +123,7 @@ LIBRARY_S_FILES = \
 LIBRARY_LD_FILES = \
 	STM32F427ZITx_FLASH.ld \
 
-LIBRARY_ALL_FILES = $(LIBRARY_H_FILES) $(LIBRARY_C_FILES) $(LIBRARY_S_FILES) $(LIBRARY_LD_FILES)
+LIBRARY_FILES = $(LIBRARY_H_FILES) $(LIBRARY_C_FILES) $(LIBRARY_S_FILES) $(LIBRARY_LD_FILES)
 
 BUILD_DIR = build
 LIBRARY_BUILD_DIR = $(BUILD_DIR)/library
@@ -130,7 +131,7 @@ TEST_BUILD_DIR = $(BUILD_DIR)/test
 RELEASE_BUILD_DIR = $(BUILD_DIR)/release
 
 TEST_SOURCE_DIR = source/test
-TEST_SOURCE_CPP_FILES = $(notdir $(wildcard $(TEST_SOURCE_DIR)/*.c)) 
+TEST_SOURCE_C_FILES = $(notdir $(wildcard $(TEST_SOURCE_DIR)/*.c $(PKG_LOGGER_DIR)/*.c)) 
 
 CC = $(TOOLCHAIN_PATH)gcc
 AS = $(TOOLCHAIN_PATH)gcc -x assembler-with-cpp
@@ -152,12 +153,16 @@ LIBRARIES = \
 DEFINES = \
 	-DUSE_HAL_DRIVER \
 	-DSTM32F427xx
+	
+INCLUDES = \
+	-I$(LIBRARY_BUILD_DIR) \
+	-I$(PKG_LOGGER_DIR)
 
 .PHONY: default library test release clean
 
 default : release
 
-library : $(LIBRARY_ALL_FILES:%=$(LIBRARY_BUILD_DIR)/%)
+library : $(LIBRARY_FILES:%=$(LIBRARY_BUILD_DIR)/%)
 
 $(LIBRARY_BUILD_DIR)/% : % | $(LIBRARY_BUILD_DIR) $(LIBRARY_BUILD_DIR)/Legacy
 	cp $< $@
@@ -177,23 +182,26 @@ $(TEST_BUILD_DIR)/test.bin : $(TEST_BUILD_DIR)/test.elf
 $(TEST_BUILD_DIR)/test.hex : $(TEST_BUILD_DIR)/test.elf
 	$(HX) $< $@
 
-$(TEST_BUILD_DIR)/test.elf : $(LIBRARY_C_FILES:%.c=$(TEST_BUILD_DIR)/%.o) $(LIBRARY_S_FILES:%.s=$(TEST_BUILD_DIR)/%.o) $(TEST_SOURCE_CPP_FILES:%.c=$(TEST_BUILD_DIR)/%.o)
+$(TEST_BUILD_DIR)/test.elf : $(patsubst %,$(TEST_BUILD_DIR)/%.o,$(basename $(LIBRARY_C_FILES) $(LIBRARY_S_FILES) $(TEST_SOURCE_C_FILES)))
 	$(CC) $(MCU) -specs=nano.specs -T$(LIBRARY_BUILD_DIR)/$(LIBRARY_LD_FILES) $(LIBRARIES) -Wl,--gc-sections $^ -o $@ -Wl,-Map=$@.map,--cref
 	$(SZ) $@
 
 $(TEST_BUILD_DIR)/%.o : $(LIBRARY_BUILD_DIR)/%.c Makefile | $(TEST_BUILD_DIR)
-	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) -MMD -g -Og -gdwarf-2 $< -o $@
+	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) $(INCLUDES) -MMD -g -Og -gdwarf-2 $< -o $@
 
 $(TEST_BUILD_DIR)/%.o : $(LIBRARY_BUILD_DIR)/%.s Makefile | $(TEST_BUILD_DIR)
-	$(AS) -c $(MCU) $(OPTIONS) $(DEFINES) -MMD $< -o $@
+	$(AS) -c $(MCU) $(OPTIONS) $(DEFINES) $(INCLUDES) -MMD $< -o $@
 
 $(TEST_BUILD_DIR)/%.o : $(TEST_SOURCE_DIR)/%.c Makefile | $(TEST_BUILD_DIR)
-	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) -I$(LIBRARY_BUILD_DIR) -MMD -g -Og -gdwarf-2 $< -o $@
+	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) $(INCLUDES) -MMD -g -Og -gdwarf-2 $< -o $@
+
+$(TEST_BUILD_DIR)/%.o : $(PKG_LOGGER_DIR)/%.c Makefile | $(TEST_BUILD_DIR)
+	$(CC) -c $(MCU) $(OPTIONS) $(DEFINES) $(INCLUDES) -MMD -g -Og -gdwarf-2 $< -o $@
 
 $(TEST_BUILD_DIR) :
 	mkdir -p $@
 
-release : test $(LIBRARY_ALL_FILES:%=$(RELEASE_BUILD_DIR)/%)
+release : test $(LIBRARY_FILES:%=$(RELEASE_BUILD_DIR)/%)
 
 $(RELEASE_BUILD_DIR)/% : $(LIBRARY_BUILD_DIR)/% | $(RELEASE_BUILD_DIR) $(RELEASE_BUILD_DIR)/Legacy
 	cp $< $@

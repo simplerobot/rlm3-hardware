@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "logger.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -36,7 +37,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+LOGGER_ZONE(INTERRUPT);
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -70,7 +71,7 @@ extern TIM_HandleTypeDef htim10;
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-  ITM_SendString("NMI_Handler\n");
+  LOG_FATAL("NMI");
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
   while (1)
@@ -85,7 +86,7 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-  ITM_SendString("HardFault_Handler\n");
+  LOG_FATAL("HardFault");
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
@@ -100,7 +101,7 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
   /* USER CODE BEGIN MemoryManagement_IRQn 0 */
-  ITM_SendString("MemManage_Handler\n");
+  LOG_FATAL("MemManage");
   /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
   {
@@ -115,7 +116,7 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
   /* USER CODE BEGIN BusFault_IRQn 0 */
-  ITM_SendString("BusFault_Handler\n");
+  LOG_FATAL("BusFault");
   /* USER CODE END BusFault_IRQn 0 */
   while (1)
   {
@@ -130,7 +131,7 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
   /* USER CODE BEGIN UsageFault_IRQn 0 */
-  ITM_SendString("UsageFault_Handler\n");
+  LOG_FATAL("UsageFault");
   /* USER CODE END UsageFault_IRQn 0 */
   while (1)
   {
@@ -145,7 +146,7 @@ void UsageFault_Handler(void)
 void DebugMon_Handler(void)
 {
   /* USER CODE BEGIN DebugMonitor_IRQn 0 */
-
+  LOG_INFO("DebugMon");
   /* USER CODE END DebugMonitor_IRQn 0 */
   /* USER CODE BEGIN DebugMonitor_IRQn 1 */
 

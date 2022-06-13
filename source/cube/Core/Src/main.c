@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include "logger.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +39,8 @@ extern void RLM3_Main();
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+
+LOGGER_ZONE(MAIN);
 
 /* USER CODE END PM */
 
@@ -81,86 +85,6 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-extern void ITM_SendString(const char* str)
-{
-  if (str == NULL)
-	  str = "(null)";
-  while (*str != 0)
-    ITM_SendChar(*(str++));
-}
-
-extern void ITM_SendUInt(uint32_t x)
-{
-  char buffer[10];
-  int count = 0;
-  do
-  {
-    buffer[count++] = '0' + (x % 10);
-    x /= 10;
-  } while (x != 0);
-  for (int i = 0; i < count; i++)
-    ITM_SendChar(buffer[count - i - 1]);
-}
-
-extern void ITM_SendInt(int32_t x)
-{
-  if (x < 0)
-  {
-    ITM_SendChar('-');
-    x = -x;
-  }
-  ITM_SendUInt((uint32_t)x);
-}
-
-extern void ITM_SendHex(uint32_t x)
-{
-  const char* HEX_DIGITS = "0123456789abcdef";
-  size_t i = 1;
-  while (i < 8 && ((x >> (32 - 4 * i)) & 0x0F) == 0)
-    i++;
-  for (; i <= 8; i++)
-    ITM_SendChar(HEX_DIGITS[(x >> (32 - 4 * i)) & 0x0F]);
-}
-
-extern void ITM_VFormat(const char * format, va_list args)
-{
-  while (*format != 0)
-  {
-    char c = *(format++);
-    if (c == '%')
-    {
-      char f = *(format++);
-      if (f == 's')
-        ITM_SendString(va_arg(args, const char*));
-      else if (f == 'd')
-        ITM_SendInt(va_arg(args, uint32_t));
-      else if (f == 'x')
-        ITM_SendHex(va_arg(args, uint32_t));
-      else if (f == '%')
-        ITM_SendChar('%');
-      else
-      {
-        ITM_SendChar('[');
-        ITM_SendChar(f);
-        ITM_SendChar(']');
-        break;
-      }
-    }
-    else
-      ITM_SendChar(c);
-  }
-}
-
-extern void ITM_Format(const char* format, ...)
-{
-  va_list args;
-  va_start(args, format);
-  ITM_VFormat(format, args);
-
-  va_end(args);
-}
-
 
 /* USER CODE END 0 */
 
@@ -803,7 +727,7 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  ITM_SendString("HAL Error.\n");
+  LOG_FATAL("HAL Startup Failure.");
   while (1)
   {
   }
@@ -823,7 +747,7 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	ITM_Format("HAL Assert '%s':%d\n", file, line);
+	LOG_ERROR("HAL Assert '%s':%u", file, (unsigned int)line);
 	// TODO: Make sure this will cause any tests to fail.
   /* USER CODE END 6 */
 }
