@@ -16,10 +16,6 @@ extern void RLM3_Main()
 {
 	LOG_ALWAYS("Running tests...");
 	LOG_ALWAYS("Passed!");
-
-	for (size_t i = 0; i < 0xFFFFFFFF; i += 0x01000000)
-		*(int*)i = 0;
-
 	ITM_SendString("EOT PASS\n");
 
 	for (;;)
