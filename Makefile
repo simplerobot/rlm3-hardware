@@ -158,9 +158,11 @@ INCLUDES = \
 	-I$(LIBRARY_BUILD_DIR) \
 	-I$(PKG_LOGGER_DIR)
 
-.PHONY: default library test release clean
+.PHONY: default all library test release clean
 
-default : release
+default : all
+
+all : release
 
 library : $(LIBRARY_FILES:%=$(LIBRARY_BUILD_DIR)/%)
 
