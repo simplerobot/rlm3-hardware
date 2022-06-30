@@ -78,6 +78,12 @@ LIBRARY_H_FILES = \
 	task.h \
 	timers.h \
 	portmacro.h \
+	adc.h \
+	dcmi.h \
+	fmc.h \
+	gpio.h \
+	i2c.h \
+	tim.h \
 
 LIBRARY_C_FILES = \
 	freertos.c \
@@ -120,6 +126,12 @@ LIBRARY_C_FILES = \
 	stream_buffer.c \
 	tasks.c \
 	timers.c \
+	adc.c \
+	dcmi.c \
+	fmc.c \
+	gpio.c \
+	i2c.c \
+	tim.c \
 
 LIBRARY_S_FILES = \
 	startup_stm32f427xx.s \
