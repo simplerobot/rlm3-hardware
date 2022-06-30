@@ -40,8 +40,6 @@
         * EXTI
      PF8   ------> S_TIM13_CH1
      PF9   ------> S_TIM14_CH1
-     PA0/WKUP   ------> UART4_TX
-     PA1   ------> UART4_RX
      PA2   ------> USART2_TX
      PA3   ------> USART2_RX
      PA7   ------> S_TIM3_CH2
@@ -112,14 +110,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF9_TIM14;
   HAL_GPIO_Init(BLADE_BRAKE_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : PAPin PAPin */
-  GPIO_InitStruct.Pin = WIFI_TX_Pin|WIFI_RX_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF8_UART4;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin */
   GPIO_InitStruct.Pin = GPS_TX_Pin|GPS_RX_Pin;

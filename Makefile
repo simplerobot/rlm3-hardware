@@ -57,6 +57,7 @@ LIBRARY_H_FILES = \
 	stm32f4xx_hal_sdram.h \
 	stm32f4xx_hal_tim.h \
 	stm32f4xx_hal_tim_ex.h \
+	stm32f4xx_hal_uart.h \
 	stm32f4xx_ll_adc.h \
 	stm32f4xx_ll_fmc.h \
 	cmsis_os.h \
@@ -84,6 +85,7 @@ LIBRARY_H_FILES = \
 	gpio.h \
 	i2c.h \
 	tim.h \
+	usart.h \
 
 LIBRARY_C_FILES = \
 	freertos.c \
@@ -114,6 +116,7 @@ LIBRARY_C_FILES = \
 	stm32f4xx_hal_sdram.c \
 	stm32f4xx_hal_tim.c \
 	stm32f4xx_hal_tim_ex.c \
+	stm32f4xx_hal_uart.c \
 	stm32f4xx_ll_adc.c \
 	stm32f4xx_ll_fmc.c \
 	cmsis_os2.c \
@@ -132,6 +135,7 @@ LIBRARY_C_FILES = \
 	gpio.c \
 	i2c.c \
 	tim.c \
+	usart.c \
 
 LIBRARY_S_FILES = \
 	startup_stm32f427xx.s \
