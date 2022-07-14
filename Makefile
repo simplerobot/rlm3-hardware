@@ -85,7 +85,6 @@ LIBRARY_H_FILES = \
 	gpio.h \
 	i2c.h \
 	tim.h \
-	usart.h \
 
 LIBRARY_C_FILES = \
 	freertos.c \
@@ -135,7 +134,6 @@ LIBRARY_C_FILES = \
 	gpio.c \
 	i2c.c \
 	tim.c \
-	usart.c \
 
 LIBRARY_S_FILES = \
 	startup_stm32f427xx.s \
