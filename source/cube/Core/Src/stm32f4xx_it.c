@@ -56,6 +56,7 @@ LOGGER_ZONE(INTERRUPT);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern SDRAM_HandleTypeDef hsdram2;
 extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim10;
 
@@ -201,6 +202,20 @@ void I2C1_ER_IRQHandler(void)
   /* USER CODE BEGIN I2C1_ER_IRQn 1 */
 
   /* USER CODE END I2C1_ER_IRQn 1 */
+}
+
+/**
+  * @brief This function handles FMC global interrupt.
+  */
+void FMC_IRQHandler(void)
+{
+  /* USER CODE BEGIN FMC_IRQn 0 */
+
+  /* USER CODE END FMC_IRQn 0 */
+  HAL_SDRAM_IRQHandler(&hsdram2);
+  /* USER CODE BEGIN FMC_IRQn 1 */
+
+  /* USER CODE END FMC_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

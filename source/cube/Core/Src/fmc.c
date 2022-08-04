@@ -23,6 +23,18 @@
 
 /* USER CODE BEGIN 0 */
 
+#define SDRAM_MODEREG_BURST_LENGTH_1             ((uint16_t)0x0000)
+#define SDRAM_MODEREG_BURST_LENGTH_2             ((uint16_t)0x0001)
+#define SDRAM_MODEREG_BURST_LENGTH_4             ((uint16_t)0x0002)
+#define SDRAM_MODEREG_BURST_LENGTH_8             ((uint16_t)0x0004)
+#define SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL      ((uint16_t)0x0000)
+#define SDRAM_MODEREG_BURST_TYPE_INTERLEAVED     ((uint16_t)0x0008)
+#define SDRAM_MODEREG_CAS_LATENCY_2              ((uint16_t)0x0020)
+#define SDRAM_MODEREG_CAS_LATENCY_3              ((uint16_t)0x0030)
+#define SDRAM_MODEREG_OPERATING_MODE_STANDARD    ((uint16_t)0x0000)
+#define SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000)
+#define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)
+
 /* USER CODE END 0 */
 
 SDRAM_HandleTypeDef hsdram2;
@@ -51,7 +63,7 @@ void MX_FMC_Init(void)
   hsdram2.Init.InternalBankNumber = FMC_SDRAM_INTERN_BANKS_NUM_4;
   hsdram2.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_3;
   hsdram2.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
-  hsdram2.Init.SDClockPeriod = FMC_SDRAM_CLOCK_DISABLE;
+  hsdram2.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_3;
   hsdram2.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
   hsdram2.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
   /* SdramTiming */
@@ -70,6 +82,61 @@ void MX_FMC_Init(void)
 
   /* USER CODE BEGIN FMC_Init 2 */
 
+  FMC_SDRAM_CommandTypeDef cmd;
+
+  // Enable SDRAM clock.
+  cmd.CommandMode = FMC_SDRAM_CMD_CLK_ENABLE;
+  cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  cmd.AutoRefreshNumber = 1;
+  cmd.ModeRegisterDefinition = 0;
+  if (HAL_SDRAM_SendCommand(&hsdram2, &cmd, 5000) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+  HAL_Delay(1);
+
+  // Precharge all pages.
+  cmd.CommandMode = FMC_SDRAM_CMD_PALL;
+  cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  cmd.AutoRefreshNumber = 1;
+  cmd.ModeRegisterDefinition = 0;
+  if (HAL_SDRAM_SendCommand(&hsdram2, &cmd, 5000) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  // Setup auto refresh.
+  cmd.CommandMode = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
+  cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  cmd.AutoRefreshNumber = 4;
+  cmd.ModeRegisterDefinition = 0;
+  if (HAL_SDRAM_SendCommand(&hsdram2, &cmd, 5000) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  // Setup the external memory mode.
+  cmd.CommandMode = FMC_SDRAM_CMD_LOAD_MODE;
+  cmd.CommandTarget = FMC_SDRAM_CMD_TARGET_BANK2;
+  cmd.AutoRefreshNumber = 1;
+  cmd.ModeRegisterDefinition = SDRAM_MODEREG_BURST_LENGTH_1          |
+                               SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+                               SDRAM_MODEREG_CAS_LATENCY_3           |
+                               SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+                               SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+  if (HAL_SDRAM_SendCommand(&hsdram2, &cmd, 5000) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  if (HAL_SDRAM_ProgramRefreshRate(&hsdram2, 1385) != HAL_OK)
+  {
+    Error_Handler( );
+  }
+
+  // Wait for all the commands to finish.
+  HAL_Delay(1);
+
   /* USER CODE END FMC_Init 2 */
 }
 
@@ -77,6 +144,14 @@ static uint32_t FMC_Initialized = 0;
 
 static void HAL_FMC_MspInit(void){
   /* USER CODE BEGIN FMC_MspInit 0 */
+
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  FMC_Initialized = 0;
 
   /* USER CODE END FMC_MspInit 0 */
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -188,6 +263,9 @@ static void HAL_FMC_MspInit(void){
 
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /* Peripheral interrupt init */
+  HAL_NVIC_SetPriority(FMC_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(FMC_IRQn);
   /* USER CODE BEGIN FMC_MspInit 1 */
 
   /* USER CODE END FMC_MspInit 1 */
@@ -207,6 +285,8 @@ static uint32_t FMC_DeInitialized = 0;
 
 static void HAL_FMC_MspDeInit(void){
   /* USER CODE BEGIN FMC_MspDeInit 0 */
+
+	FMC_DeInitialized = 0;
 
   /* USER CODE END FMC_MspDeInit 0 */
   if (FMC_DeInitialized) {
@@ -275,6 +355,8 @@ static void HAL_FMC_MspDeInit(void){
 
   HAL_GPIO_DeInit(GPIOB, GPIO_PIN_5|GPIO_PIN_6);
 
+  /* Peripheral interrupt DeInit */
+  HAL_NVIC_DisableIRQ(FMC_IRQn);
   /* USER CODE BEGIN FMC_MspDeInit 1 */
 
   /* USER CODE END FMC_MspDeInit 1 */
